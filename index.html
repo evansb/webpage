@@ -1,0 +1,12 @@
+---
+title: home
+---
+
+<h2>All Posts</h2>
+<ul class="box-ul">
+    $for(posts)$
+    <li class="box-list">
+    <a href="$url$">$title$</a> - $date$
+    </li>
+    $endfor$
+</ul>

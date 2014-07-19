@@ -1,0 +1,341 @@
+/* Elements */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: #3b4949;
+    color: rgba(221,236,212,0.7);
+    font-family: 'Source Sans Pro', sans-serif;
+    overflow: auto;
+    margin: 0 0 100px;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+a img {
+    border: none;
+}
+
+h1 {
+    margin-bottom: 10px;
+    font-size: 1.9em;
+}
+/* End Elements */
+
+/* Media */
+
+@media screen and (min-width: 914px) {
+    .container {
+        width: 856px;
+    }
+}
+
+@media screen and (min-width: 1280px) {
+    .container {
+        width: 1000px;
+    }
+}
+
+@media print {
+    body,code,pre code,h1,h2,h3,h4,h5,h6 {
+        color: black;
+    }
+    table, pre {
+        page-break-inside: avoid;
+    }
+}
+
+/* End Media */
+
+/* Classes */
+.container {
+    overflow: show;
+    margin: 0px auto;
+}
+
+.title {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin-left: 0.5em;
+}
+
+.title a {
+    color: rgb(221,236,212);
+
+}
+
+.title h1 {
+    font-size: 3em;
+    font-family: 'Bitter', serif;
+    text-shadow: 4px 3px 3px #334040;
+    color: #ddecd4;
+}
+
+.title-list {
+    color: rgba(221,236,212,0.3);
+    display: inline-block;
+}
+
+.title-list:after {
+    margin: 0.2em;
+}
+
+.title-list a {
+    color: rgba(221,236,212,0.3);
+}
+
+.title-list a:hover {
+    color: #ff8281;
+}
+
+.post {
+    padding: 1em;
+    margin-top: 1.5em;
+    margin-bottom: 2em;
+}
+
+.post h1 {
+    text-align: center;
+    text-decoration: underline;
+}
+
+.post h3 {
+    text-align: center;
+}
+
+.post a {
+    color: #eaffde;
+    text-decoration: none;
+}
+
+.post p {
+    padding-left: 0.5em;
+}
+
+.footer {
+    text-align: center;
+    padding: 10px 10px 20px 10px;
+    background-color: rgba(10,20,10,0.4);
+    color: rgba(221,236,212,0.2);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    height: 100px;
+    width: 100%;
+    clear:both;
+    min-height:50px;
+}
+
+.footer ul {
+    list-style: none;
+    padding: 0.4em;
+    margin: 0;
+}
+
+.footer ul a {
+    color: rgba(221,236,212,0.3);
+    text-decoration: none;
+}
+
+.footer ul a:hover {
+    color:  #ff8281;
+}
+
+.footer li {
+    display:inline;
+    margin: 1em;
+}
+
+.box-ul {
+    padding:0;
+    margin:0;
+    width:100%;
+    overflow: scroll;
+}
+
+.box-list {
+    background-color: rgba(10,20,10,0.1);
+    color: rgba(221,236,212,0.3);
+    padding: 1em;
+    margin: 0.2em;
+    display: block;
+}
+
+/* Blog Posts */
+.post-body {
+    font-size: 1.2em;
+    text-shadow:1px 1px 2px rgba(10,20,10,0.4);
+}
+
+.post-body code {
+    font-family: 'Source Code Pro', sans-serif;
+    color: rgba(221,236,212,0.4);
+    text-shadow: none;
+    font-size: 0.8em;
+}
+
+.post-body pre {
+    background-color: rgba(10,20,10,0.1);
+    overflow: auto;
+    padding: 0.4em;
+}
+
+.post-body strong {
+    font-weight: bolder;
+}
+
+.post-body h1:before,h2:before,h3:before {
+    content:'\25CF';
+    color: rgba(10,20,10,0.1);
+    margin-right: 0.2em;
+    text-shadow: none;
+}
+
+.post-body h1,h2,h3 {
+    text-decoration: none;
+    text-shadow:1px 1px 2px rgba(10,20,10,0.4);
+    color: rgb(181,137);
+}
+
+.post-body h1 {
+    text-align: left;
+    font-size: 2em;
+}
+
+.post-body blockquote {
+    background-color: rgba(10,20,10,0.1);
+}
+
+.post-heading {
+    font-size: 3em;
+    font-family: 'Bitter', sans-serif;
+    color: rgb(221,236,212);
+    margin-bottom: 1.4em;
+}
+
+.post-footer {
+    font-size: 0.8em;
+    color: rgba(221,236,212,0.3);
+}
+
+/*
+ * Gridism
+ * A simple, responsive, and handy CSS grid by @cobyism
+ * https://github.com/cobyism/gridism
+ */
+
+/* Preserve some sanity */
+.grid,
+.unit {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* Set up some rules to govern the grid */
+.grid {
+  display: block;
+  clear: both;
+}
+.grid .unit {
+  float: left;
+  width: 100%;
+  padding: 10px;
+}
+
+/* This ensures the outer gutters are equal to the (doubled) inner gutters. */
+.grid .unit:first-child { padding-left: 20px; }
+.grid .unit:last-child { padding-right: 20px; }
+
+/* Nested grids already have padding though, so let’s nuke it */
+.unit .unit:first-child { padding-left: 0; }
+.unit .unit:last-child { padding-right: 0; }
+.unit .grid:first-child > .unit { padding-top: 0; }
+.unit .grid:last-child > .unit { padding-bottom: 0; }
+
+/* Let people nuke the gutters/padding completely in a couple of ways */
+.no-gutters .unit,
+.unit.no-gutters {
+  padding: 0 !important;
+}
+
+/* Wrapping at a maximum width is optional */
+.wrap .grid,
+.grid.wrap {
+  max-width: 978px;
+  margin: 0 auto;
+}
+
+/* Width classes also have shorthand versions numbered as fractions
+ * For example: for a grid unit 1/3 (one third) of the parent width,
+ * simply apply class="w-1-3" to the element. */
+.grid .whole,          .grid .w-1-1 { width: 100%; }
+.grid .half,           .grid .w-1-2 { width: 50%; }
+.grid .one-third,      .grid .w-1-3 { width: 33.3332%; }
+.grid .two-thirds,     .grid .w-2-3 { width: 66.6665%; }
+.grid .one-quarter,    .grid .w-1-4 { width: 25%; }
+.grid .three-quarters, .grid .w-3-4 { width: 75%; }
+.grid .one-fifth,      .grid .w-1-5 { width: 20%; }
+.grid .two-fifths,     .grid .w-2-5 { width: 40%; }
+.grid .three-fifths,   .grid .w-3-5 { width: 60%; }
+.grid .four-fifths,    .grid .w-4-5 { width: 80%; }
+.grid .golden-small,   .grid .w-g-s { width: 38.2716%; } /* Golden section: smaller piece */
+.grid .golden-large,   .grid .w-g-l { width: 61.7283%; } /* Golden section: larger piece */
+
+/* Clearfix after every .grid */
+.grid {
+  *zoom: 1;
+}
+.grid:before, .grid:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.grid:after {
+  clear: both;
+}
+
+/* Utility classes */
+.align-center { text-align: center; }
+.align-left   { text-align: left; }
+.align-right  { text-align: right; }
+.pull-left    { float: left; }
+.pull-right   { float: right; }
+
+/* Responsive Stuff */
+@media screen and (max-width: 568px) {
+  /* Stack anything that isn’t full-width on smaller screens */
+  .grid .unit {
+    width: 100% !important;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .unit .grid .unit {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  /* Sometimes, you just want to be different on small screens */
+  .center-on-mobiles {
+    text-align: center !important;
+  }
+  .hide-on-mobiles {
+    display: none !important;
+  }
+}
+
+/* Expand the wrap a bit further on larger screens */
+@media screen and (min-width: 1180px) {
+  .wider .grid {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+}
