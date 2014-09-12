@@ -3,28 +3,39 @@
 <head>
 <meta charset="utf-8">
 <title>$title$</title>
-<link href="http://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" rel="stylesheet" type="text/css">
-<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel='stylesheet'>
-<link href='http://fonts.googleapis.com/css?family=Bitter:400'
+<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel='stylesheet'>
+<link href='http://fonts.googleapis.com/css?family=Antic+Slab:400'
 rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro'
+<link href='http://fonts.googleapis.com/css?family=Inconsolata'
 rel='stylesheet' type='text/css'>
-
+<link href='http://fonts.googleapis.com/css?family=Lato:300'
+rel='stylesheet' type='text/css'>
+<link href='http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css'
+rel='stylesheet' type='text/css'>
 <link href="/css/default.css" rel="stylesheet" type="text/css">
-<link href="/css/foghorn.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
-<div class="container">
-    <div class="title">$partial("templates/header.html")$</div>
-    <div class="grid post">
-        $body$
+<div class="row">
+        <div class="title col-md-12">
+            $partial("templates/header.html")$
+        </div>
+</div>
+
+<div class="row post">
+    <div class="container">
+        <div class="col-md-12">
+            $body$
+        </div>
     </div>
 </div>
-<footer class="grid footer">
+
+<footer class="row footer">
     $partial("templates/footer.html")$
 </footer>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
 </body>
 </html>
 

@@ -2,11 +2,17 @@
 title: home
 ---
 
-<h2>All Posts</h2>
-<ul class="box-ul">
-    $for(posts)$
-    <li class="box-list">
-    <a href="$url$">$title$</a> - $date$
-    </li>
-    $endfor$
-</ul>
+<style>body { background-color:#ff8185; color: white;} </style>
+
+<h1>HELLO THERE,</h1>
+<br>
+<p>My name is <strong>Evan Sebastian</strong> and this is my personal blog.
+I am a sophomore in <strong>National University of Singapore</strong> interested in programming language theory, especially <strong>functional programming</strong> and its application in the
+real world.
+</p>
+
+<p>During this blog's lifetime, several essays has been written.</p>
+
+	$for(posts)$
+	<a href="$url$" class="box-list">$title$</a>
+	$endfor$
