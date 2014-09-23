@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ST Monad in 5 minute-ish</title>
+<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+<link href="http://fonts.googleapis.com/css?family=Antic+Slab:400" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet" type="text/css">
+<link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../css/default.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<div class="row">
+        <div class="title col-md-12">
+            <div class="title"><a href="../">think &gt;&gt;= write</a>
+<ul>
+    <li class="box-list"><a href="mailto:evan.sebastian@u.nus.edu.sg">
+        <i class="fa fa-envelope"></i> 
+    </a></li>
+    <li class="box-list"><a href="https://github.com/evansb">
+        <i class="fa fa-github"></i> 
+    </a></li>
+    <li class="box-list"><a href="https://twitter.com/sagetruck">
+        <i class="fa fa-twitter"></i> 
+    </a></li>
+</ul>
+</div>
+
+        </div>
+</div>
+
+<div class="row post">
+    <div class="container">
+        <div class="col-md-12">
+            
+<div class="page-header post-heading">
+<h1>ST Monad in 5 minute-ish</h1>
+Posted on August 25, 2014  by Evan Sebastian <br>
+</div>
+
+<div class="post-body"><h3 id="motivation">Motivation</h3>
+<p>IO Monad already show us how controlled side effects rocks. Still, sometimes we are longing for impurity.</p>
+<p>ST Monad make it possible to have impure code inside a pure function while still maintaining safety.</p>
+<h3 id="st-is-two-way-monad">ST is Two Way Monad</h3>
+<p>To appreciate ST, we must first understand the notion of one-way vs two-way monad. Two way Monad provides you mechanism to get the result out from the context or in short, <code>M a -&gt; a</code>. For instance, in <code>State</code> monad you can get the state function inside back by using <code>runState</code>. This is not possible in one way monad.</p>
+<p><code>IO</code> is one way monad for good reason, <em>safety</em>. In short, a function cannot deny the fact that IO (i.e side effect) has been done, provided no <code>unsafePerformIO</code> is used.</p>
+<p>Luckily, <code>ST</code> is two way monad, we can escape ST via <code>runST</code>.</p>
+<h3 id="st-and-mutable-references">ST and Mutable References</h3>
+<p>Mutable reference is basically variable in imperative programming language.</p>
+<p>With ST, it is trivial to create some building blocks involving mutable reference such as <code>for</code>. A <code>for</code> block is simple, it is a function that takes an inital state, end state, step function, and a block that will be executed. It will execute the block followed by applying step function to the initial state until the initial state is equal to the end state.</p>
+<pre><code>import Control.Monad (unless)
+import Control.Monad.ST
+import Data.STRef
+
+for :: (Eq a)
+    =&gt; STRef s a -- ^ Initial state
+    -&gt; STRef s a -- ^ End state
+    -&gt; (STRef s a -&gt; ST s ()) -- ^ Step function
+    -&gt; ST s b -- ^ Block
+    -&gt; ST s ()
+for init_ end_ step_ block_ = do
+    lhs &lt;- readSTRef init_
+    rhs &lt;- readSTRef end_
+    unless (lhs == rhs) $ do
+        block_
+        step_ init_
+        for init_ end_ step_ block_</code></pre>
+<p>Now you can write a pure function in an imperative manner. With <code>runST</code>, the impure and pure computation can be separated clearly, hence safety is guaranteed.</p>
+<pre><code>-- | Return sum from 1 until (n - 1)
+sumUntil :: Int -&gt; Int
+sumUntil n = runST $ do
+    -- Create mutable references
+    i &lt;- newSTRef (1::Int)
+    j &lt;- newSTRef n
+    -- Mutate references
+    let step x = modifySTRef x (+ 1)
+    s &lt;- newSTRef (0::Int)
+    for i j step $ do
+        i' &lt;- readSTRef i
+        modifySTRef s (+ i')
+    readSTRef s</code></pre>
+<h3 id="wrap-up">Wrap-up</h3>
+<p>Beyond simple mutable references, ST Monad allows the creation of more complex data structure such as array and hash tables. In more sophisticated libraries, a neat thaw-freeze method is usually used. You can <code>thaw</code> an immutable data structure temporarily, modify it inside ST context, and <code>freeze</code> it to turn it immutable again.</p></div>
+
+<div class="post-footer">
+    <a href="#Top"> Back to Top</a>
+</div>
+        </div>
+    </div>
+</div>
+
+<footer class="row footer">
+    
+<small> © CC-BY-SA. 2014 Evan Sebastian <br>
+    Proudly powered with Hakyll. Fonts by Google.
+</small>
+
+</footer>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+

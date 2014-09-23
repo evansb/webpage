@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Guessing Implementation of Type Classes</title>
+<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+<link href="http://fonts.googleapis.com/css?family=Antic+Slab:400" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet" type="text/css">
+<link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../css/default.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<div class="row">
+        <div class="title col-md-12">
+            <div class="title"><a href="../">think &gt;&gt;= write</a>
+<ul>
+    <li class="box-list"><a href="mailto:evan.sebastian@u.nus.edu.sg">
+        <i class="fa fa-envelope"></i> 
+    </a></li>
+    <li class="box-list"><a href="https://github.com/evansb">
+        <i class="fa fa-github"></i> 
+    </a></li>
+    <li class="box-list"><a href="https://twitter.com/sagetruck">
+        <i class="fa fa-twitter"></i> 
+    </a></li>
+</ul>
+</div>
+
+        </div>
+</div>
+
+<div class="row post">
+    <div class="container">
+        <div class="col-md-12">
+            
+<div class="page-header post-heading">
+<h1>Guessing Implementation of Type Classes</h1>
+Posted on July 25, 2014  by Evan Sebastian <br>
+</div>
+
+<div class="post-body"><p>Implementing Haskell type classes can be arduous, it is one of the many aspects that made this language notoriously hard for beginners. Yet, it is difficult to get a full grasp and appreciate the beauty of type classes without actually deriving its instance for some basic data types (or at least having seen the implementation).</p>
+<p>In this blog post, I would like to illustrate an example of thinking process that can be used when implementing type classes whose functionality is not so obvious to determine.</p>
+<p>Before we start, there are at least two hints that is given for free before you are trying to derive a new instance of a type classes.</p>
+<ol style="list-style-type: decimal">
+<li>The type signature given in the type class declaration.</li>
+<li>The laws given in the documentation.</li>
+</ol>
+<p>Sometimes you don’t even need to understand what its instances should do. You provide an implementation that follows the type signature and satisfy the laws. After everything is done, you will begin to understand its behavior, which most likely is the correct one.</p>
+<p>To illustrate how we can harness those two hints, I will re-implement the function monad <code>(-&gt;) r</code>.</p>
+<p><strong>Step one : Look at its typeclass definition and properly substitute their parameters.</strong></p>
+<p>In this case, we need to substitute <code>m</code> with <code>(-&gt; t)</code></p>
+<pre><code>class Monad m where
+  (&gt;&gt;=) :: m a -&gt; (a -&gt; m b) -&gt; m b
+  return :: a -&gt; m a</code></pre>
+<p>Therefore, our instance implementation should have this form.</p>
+<pre><code>instance Monad ((-&gt;) t) where
+  (&gt;&gt;=) :: ((-&gt;) t a) -&gt; (a -&gt; ((-&gt;) t b)) -&gt; ((-&gt;) t b)
+  return :: a -&gt; ((-&gt;) t a)</code></pre>
+<p><strong>Start matching the types without caring about its meaning.</strong></p>
+<p>Let us start with <code>(&gt;&gt;=)</code> since it seems to be more difficult. I would like to change the postfix form of <code>(-&gt;)</code> into infix form to improve readibility. Now we have.</p>
+<pre><code>(&gt;&gt;=) :: (t -&gt; a) -&gt; (a -&gt; (t -&gt; b)) -&gt; (t -&gt; b)</code></pre>
+<p>So the first parameter should be a function, the second one is a function that returns a function. Let us pick ugly but descriptive names for these parameters, <code>ta</code> (t to a) and <code>atb</code> (a to (t to b)).</p>
+<p>We would like our <code>&gt;&gt;=</code> to return a function that takes type <code>t</code> as parameter. Hmm, let us write it in a lambda form first.</p>
+<pre><code>ta &gt;&gt;= atb = \t -&gt; -- what should goes here?</code></pre>
+<p>The result of <code>\t</code> must be of type <code>b</code>. The only way to get <code>b</code> is via <code>atb</code>. But <code>atb</code> accepts <code>a</code> instead of <code>t</code>. This leaves us only to the first argument, <code>ta</code>. Hmm, let us plug in <code>ta t</code>.</p>
+<pre><code>ta &gt;&gt;= atb = \t -&gt; (ta t)</code></pre>
+<p>Now our lambda function has type <code>(t -&gt; a)</code>. Not good, since we are expecting <code>(t -&gt; b)</code>. But we still have the second argument! Let us plug it in before <code>(ta t)</code>.</p>
+<pre><code>ta &gt;&gt;= atb = \t -&gt; atb (ta t)</code></pre>
+<p>Since <code>atb _</code> has type <code>(t -&gt; b)</code> we have <code>(t -&gt; (t -&gt; b))</code>. How do we reduce it into <code>t -&gt; b</code>? Well by applying it into <code>t</code>, of course.</p>
+<pre><code>ta &gt;&gt;= atb = \t -&gt; atb (ta t) t</code></pre>
+<p>Now that we have a syntatically correct expression, let us change back the parameter names.</p>
+<pre><code>f &gt;&gt;= g = \x -&gt; g (f x) x</code></pre>
+<p>Our <code>&gt;&gt;=</code> is done, now we proceed to <code>return</code>. It has the following type.</p>
+<pre><code>return :: a -&gt; (t -&gt; a)</code></pre>
+<p>How do you create any function from any value that always return something of the same type as the value?</p>
+<p>Remember that we can think of type as a set of valid values. Now, since we are on generic context <code>a</code>, we should make sure that our <code>return</code> works for all sets (or types, if you like). Hence, we <em>cannot</em> do the following.</p>
+<ol style="list-style-type: decimal">
+<li>Use any function other than type <code>a -&gt; .... -&gt; a</code>.</li>
+<li>Include any particular member of the set in the computation.</li>
+</ol>
+<p>At this point, you should realise that <code>const</code> is a possible candidate of <code>return</code>. You may double check it by searching for <code>a -&gt; t -&gt; a</code> in <code>hoogle</code>.</p>
+<p>Here is our finalised function monad implementation.</p>
+<pre><code>instance Monad ((-&gt;) t) where
+      return = const
+      f &gt;&gt;= g = \x -&gt; g (f x) x</code></pre>
+<p><strong>Step three : Proving that your implementation satisfy the law.</strong></p>
+<p>These are the monad laws that I shamelessly copied from the <a href="http://www.haskell.org/haskellwiki/Monad_laws">Haskell wiki</a> with some modification in the parameter name. The proof is mine and is not formally checked (google is not friendly on this one), so let me know if I made any mistakes.</p>
+<pre><code>Left identity:      return a &gt;&gt;= g ≡ g a
+Proof:
+    return a &gt;&gt;= g ≡ const a &gt;&gt;= g
+                   ≡ \x -&gt; g (const a x) x
+                   ≡ \x -&gt; g a x
+                   ≡ g a (QED)
+
+Right identity:       m &gt;&gt;= return ≡ m
+Proof:
+    m &gt;&gt;= return   ≡ \x -&gt; return (m x) x
+                   ≡ \x -&gt; const (m x) x
+                   ≡ \x -&gt; m x
+                   ≡ m (QED)
+
+Associativity:    (m &gt;&gt;= f) &gt;&gt;= g  ≡ m &gt;&gt;= (\x -&gt; f x &gt;&gt;= g)
+Proof:
+    m &gt;&gt;= (\x -&gt; f x &gt;&gt;= g) ≡ m &gt;&gt;= (\x -&gt; (\q -&gt; g (f x q) q))
+                            ≡ \y -&gt; (\x -&gt; (\q -&gt; g (f x q) q)) (m y) y
+                            ≡ \y -&gt; (\q -&gt; g (f (m y) q) q) y
+                            ≡ \y -&gt; g (f (m y) y) y
+                            ≡ \y -&gt; g ((m &gt;&gt;= f) y) y
+                            ≡ (m &gt;&gt;= f) &gt;&gt;= g (QED)</code></pre>
+<p>Honestly, I almost give up and left out the last one with a funny “left as exercise”. The last one was hard. Let me know if there are any errors in my proof.</p>
+<p><strong>Last step : Start growing your reasoning by using examples</strong></p>
+<p>Now that we have correct implementation of function Monad, let us see some examples.</p>
+<pre><code>exampleOne = do
+        a &lt;- (*4)
+        b &lt;- (*3)
+        c &lt;- (*2)
+        return (a + b)</code></pre>
+<p>This will return a function of <code>Integer -&gt; Integer</code> (by default), say <code>x</code>. When <code>exampleOne</code> applied to <code>x</code>, a is bound to the result of <code>(*4) x</code>, similarly to b and c. Remember that <code>return (a + b)</code> is just <code>const (a + b)</code>.</p>
+<p>Another trivial example with list…</p>
+<pre><code>exampleTwo = do
+        a &lt;- map (+1)
+        b &lt;- map (+2)
+        return (zip a b)</code></pre>
+<p>or FizzBuzz…</p>
+<pre><code>fizzBuzz = do
+    a &lt;- \x -&gt; if x `mod` 3 == 0 then &quot;Fizz&quot; else &quot;&quot;
+    b &lt;- \y -&gt; if y `mod` 5 == 0 then &quot;Buzz&quot; else &quot;&quot;
+    return (a ++ b)</code></pre>
+<p>We just implemented <code>(-&gt;) r</code> Monad without first knowing about its functionality. This technique can be useful when we are trying to implement something with unknown behaviour, such as when we try to create an instance of a type class for an unfamiliar type.</p></div>
+
+<div class="post-footer">
+    <a href="#Top"> Back to Top</a>
+</div>
+        </div>
+    </div>
+</div>
+
+<footer class="row footer">
+    
+<small> © CC-BY-SA. 2014 Evan Sebastian <br>
+    Proudly powered with Hakyll. Fonts by Google.
+</small>
+
+</footer>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+
